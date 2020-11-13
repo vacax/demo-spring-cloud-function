@@ -1,0 +1,60 @@
+
+plugins {
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+group = 'edu.pucmm.eict'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR6")
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-function-web'
+    implementation 'org.springframework.cloud:spring-cloud-function-adapter-aws'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.0.2'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-aws'
+    //implementation 'org.springframework.cloud:spring-cloud-starter-aws-jdbc'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+//Creando la Jar listo para publicar en AWS.
+shadowJar {
+    classifier = 'aws'
+    mergeServiceFiles()
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer) {
+        paths = ['META-INF/spring.factories' ]
+        mergeStrategy = "append"
+    }
+}
+
+assemble.dependsOn shadowJar
+
+test {
+    useJUnitPlatform()
+}
