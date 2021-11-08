@@ -1,9 +1,10 @@
 
 plugins {
-    id 'org.springframework.boot' version '2.3.1.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    //id "com.microsoft.azure.azurefunctions" version "1.8.0"
 }
 
 group = 'edu.pucmm.eict'
@@ -15,7 +16,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR6")
+    set('springCloudVersion', "2020.0.4")
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-function-adapter-aws'
     implementation 'com.amazonaws:aws-lambda-java-events:2.0.2'
     implementation 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    //implementation 'com.microsoft.azure.functions:azure-functions-java-library:1.4.2'
     //implementation 'org.springframework.cloud:spring-cloud-starter-aws'
     //implementation 'org.springframework.cloud:spring-cloud-starter-aws-jdbc'
     compileOnly 'org.projectlombok:lombok'
@@ -40,21 +42,42 @@ dependencyManagement {
     }
 }
 
+assemble.dependsOn shadowJar
+
+//
+import com.github.jengelman.gradle.plugins.shadow.transformers.*
+
 //Creando la Jar listo para publicar en AWS.
 shadowJar {
     classifier = 'aws'
+    dependencies {
+        exclude(
+                dependency("org.springframework.cloud:spring-cloud-function-web:${springCloudVersion}"))
+    }
+    // Required for Spring
     mergeServiceFiles()
     append 'META-INF/spring.handlers'
     append 'META-INF/spring.schemas'
     append 'META-INF/spring.tooling'
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.PropertiesFileTransformer) {
-        paths = ['META-INF/spring.factories' ]
+    transform(PropertiesFileTransformer) {
+        paths = ['META-INF/spring.factories']
         mergeStrategy = "append"
     }
 }
 
-assemble.dependsOn shadowJar
+
 
 test {
     useJUnitPlatform()
 }
+
+/*azurefunctions {
+    resourceGroup = 'java-functions-group'
+    appName = 'azure-functions-sample'
+    pricingTier = 'Consumption'
+    region = 'eastus'
+    auth {
+        type = 'azure_cli'
+    }
+    localDebug = "transport=dt_socket,server=y,suspend=n,address=5005"
+}*/

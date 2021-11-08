@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 /**
  * La función Supplier unicamente devuelve información por el metodo get.
  * http://localhost:8080/holaMundoSupplier
+ * Si lo integramos con el Api Gateway HTTP con la función GET, podemos obtener información.
  */
 @Component
 public class HolaMundoSupplier implements Supplier<HolaMundoSupplier.EstatusServidor> {

@@ -3,12 +3,14 @@ package edu.pucmm.eict.demospringcloudfunction.funciones;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
- * Las funciones consumer unicamente reciben información pero no responden. Ideal para notificar eventos.
+ * Las funciones consumer unicamente reciben información pero no responden. Ideal para recibir eventos.
  * curl -H "Content-Type: application/json" localhost:8080/holaMundoConsumer -d '{"id": 1, "latitud" : "19.123", "longitud": "69.123"}'
+ * Lo vamos a utilizar para trabajar en eventos que no requieren respuesta, como Cronbjob
  */
 @Component
 public class HolaMundoConsumer implements Consumer<HolaMundoConsumer.NotificacionPosicion> {

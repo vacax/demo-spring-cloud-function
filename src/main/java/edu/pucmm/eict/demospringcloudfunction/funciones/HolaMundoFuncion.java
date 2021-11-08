@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
- * Por el componente el nombre de la función es holaMundoFuncion
+ * Por el componente el nombre de la función es holaMundoFuncion, recibe información y retorna informacion.
  * curl -H "Content-Type: application/json" localhost:8080/holaMundoFuncion -d '{"nombre": "Carlos Camacho"}'
  */
 @Component
@@ -41,7 +41,7 @@ public class HolaMundoFuncion implements Function<HolaMundoFuncion.HolaMundoRequ
     }
 
     /**
-     * Clase para encapsular la respuesta de la llamda.
+     * Clase para encapsular la respuesta de la llamada.
      */
     @Data
     public static class HolaMundoResponse{
