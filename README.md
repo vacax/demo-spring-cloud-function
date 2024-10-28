@@ -14,3 +14,8 @@ Para compilar el proyecto:
 
 Para crear el servicio, realizar los siguientes pasos:
 
+## Versión de la aplicación
+
+- Spring Boot 2.5.6
+- Java 11
+- Spring Cloud Function ->  2020.0.4
