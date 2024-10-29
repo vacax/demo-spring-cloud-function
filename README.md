@@ -16,6 +16,26 @@ Para crear el servicio, realizar los siguientes pasos:
 
 ## Versión de la aplicación
 
-- Spring Boot 2.5.6
-- Java 11
-- Spring Cloud Function ->  2020.0.4
+- Spring Boot 3.3.5
+- Java 21
+- Spring Cloud Function -> versión 2023.0.3
+
+## Configurar en AWS
+
+Una vez cargado el jar en en la función de AWS, debemos configurar el controlador
+con el siguiente valor ```org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest```
+y en las variables de entornos crear la entrada ```spring_cloud_function_definition = mensajeDirecto``` y 
+``` MAIN_CLASS = edu.pucmm.eict.demospringcloudfunction.DemoSpringCloudFunctionApplication```. Ver imagenes:
+
+
+![conf-tiempo-ejecucion.png](imagenes/conf-tiempo-ejecucion.png)
+
+![conf-variable-entorno.png](imagenes/conf-variable-entorno.png)
+
+Para la prueba, puede crear un JSON de tipo String:
+
+![ejemplo-json.png](imagenes/ejemplo-json.png)
+
+![corrida.png](imagenes/corrida.png)
+
+Ver más información en: https://docs.spring.io/spring-cloud-function/reference/adapters/aws-intro.html
