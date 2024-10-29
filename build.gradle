@@ -1,29 +1,35 @@
 
 plugins {
-    id 'org.springframework.boot' version '2.5.6'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id "com.github.johnrengelman.shadow" version "7.1.0"
-    //id "com.microsoft.azure.azurefunctions" version "1.8.0"
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id 'org.springframework.boot.experimental.thin-launcher' version "1.0.31.RELEASE"
 }
 
 group = 'edu.pucmm.eict'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 ext {
-    set('springCloudVersion', "2020.0.4")
+    set('springCloudVersion', "2023.0.3")
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-function-context'
     implementation 'org.springframework.cloud:spring-cloud-function-web'
-    implementation 'org.springframework.cloud:spring-cloud-function-adapter-aws'
+    implementation "org.springframework.cloud:spring-cloud-function-adapter-aws"
     implementation 'com.amazonaws:aws-lambda-java-events:2.0.2'
     implementation 'com.amazonaws:aws-lambda-java-core:1.1.0'
     //implementation 'com.microsoft.azure.functions:azure-functions-java-library:1.4.2'
@@ -47,18 +53,21 @@ assemble.dependsOn shadowJar
 //
 import com.github.jengelman.gradle.plugins.shadow.transformers.*
 
+shadowJar.mustRunAfter thinJar
+
 //Creando la Jar listo para publicar en AWS.
 shadowJar {
-    classifier = 'aws'
-    dependencies {
-        exclude(
-                dependency("org.springframework.cloud:spring-cloud-function-web:${springCloudVersion}"))
+    archiveClassifier = 'aws'
+    manifest {
+        inheritFrom(project.tasks.thinJar.manifest)
     }
     // Required for Spring
     mergeServiceFiles()
     append 'META-INF/spring.handlers'
     append 'META-INF/spring.schemas'
     append 'META-INF/spring.tooling'
+    append 'META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports'
+    append 'META-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports'
     transform(PropertiesFileTransformer) {
         paths = ['META-INF/spring.factories']
         mergeStrategy = "append"
